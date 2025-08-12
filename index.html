@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head> 
+  <script defer src="https://cdn.overtracking.com/t/tyDM63irGEJiZY2jK/"></script>
+
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WGZXEDCM5F"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -195,6 +197,7 @@
     line-height: 1.2;
     white-space: nowrap;
   }
+  body.dark #authStatusBar h1 { color: #a5b4fc; }
   #authStatusBar .subtitle {
     font-size: 1.1em;
     color: #555;
@@ -292,4 +295,24 @@
   .dark-toggle-btn svg {
     height: 1.2em; width: 1.2em;
     vertical-align: middle;
-    transition:
+    transition: transform 0.3s;
+  }
+  .dark-toggle-btn.active {
+    background: #2d3748;
+    color: #a5b4fc;
+  }
+  body.dark .dark-toggle-btn {
+    background: #2d3748;
+    color: #a5b4fc;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  }
+  h1, h2 {
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 0.5em;
+    transition: color var(--transition);
+  }
+  h1 { 
+    margin-top: 2em; 
+    font-size: 2.2rem; 
+    color: var(--primary);
