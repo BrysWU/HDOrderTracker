@@ -14,6 +14,7 @@
       --danger-hover: #e63e66;
       --success: #06d6a0;
       --warning: #ffd166;
+      --warning-hover: #ffca3a;
       --border: #e9ecef;
       --radius: 16px;
       --radius-sm: 8px;
@@ -322,11 +323,12 @@
       font-weight: 500;
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(67,97,238,0.15);
-      transition: background var(--transition), color var(--transition), box-shadow 0.2s;
+      transition: background var(--transition), color var(--transition), box-shadow 0.2s, transform 0.2s;
       outline: none;
     }
     .pending-user button:hover, .site-user button:hover {
       box-shadow: 0 6px 18px rgba(67,97,238,0.25);
+      transform: translateY(-2px);
     }
     .pending-user button:last-child, .site-user button:last-child { margin-right: 0; }
     .pending-user button.approveBtn { background: var(--primary); }
@@ -668,7 +670,7 @@
       border: none;
       border-radius: 50%;
       cursor: pointer;
-      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -680,6 +682,7 @@
       background: var(--danger-hover);
       color: #fff;
       box-shadow: 0 6px 15px rgba(239,71,111,0.3);
+      transform: translateY(-2px);
     }
     #deleteConfirmModal h3 {
       margin-bottom: 1.2em;
@@ -1135,7 +1138,398 @@
     setDarkMode(!document.body.classList.contains('dark'));
   });
 
-  // Rest of your existing JavaScript would go here
-</script>
-</body>
-</html>
+  // Admin Auth Logic
+  const $loginSection = document.getElementById('loginSection');
+  const $adminSection = document.getElementById('adminSection');
+  const $adminUsername = document.getElementById('adminUsername');
+  const $adminPassword = document.getElementById('adminPassword');
+  const $adminLoginBtn = document.getElementById('adminLoginBtn');
+  const $errorMsg = document.getElementById('errorMsg');
+  const $successMsg = document.getElementById('successMsg');
+  const $authStatusBar = document.getElementById('authStatusBar');
+  const $adminWelcome = document.getElementById('adminWelcome');
+  const $logoutBtn = document.getElementById('logoutBtn');
+  const $logoutBtn2 = document.getElementById('logoutBtn2');
+
+  $adminLoginBtn.addEventListener('click', async function() {
+    const username = $adminUsername.value.trim();
+    const password = $adminPassword.value.trim();
+    
+    if (!username || !password) {
+      $errorMsg.textContent = "Please fill in all fields";
+      return;
+    }
+
+    $adminLoginBtn.disabled = true;
+    $adminLoginBtn.textContent = "Logging in...";
+    $errorMsg.textContent = "";
+
+    try {
+      const response = await fetch(`${API_URL}/api/admin/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.token) {
+        adminToken = data.token;
+        adminUsername = username;
+        
+        localStorage.setItem('adminToken', adminToken);
+        localStorage.setItem('adminUsername', adminUsername);
+        
+        showAdminPanel();
+        
+        fetchPendingUsers();
+        fetchUsersList();
+        fetchChangeHistory();
+        startBannerPolling();
+
+        showNotificationPopup("Login Successful", `Welcome back, ${adminUsername}!`);
+      } else {
+        $errorMsg.textContent = data.message || "Login failed. Please check your credentials.";
+      }
+    } catch (error) {
+      $errorMsg.textContent = "Error connecting to server. Please try again later.";
+      console.error("Login error:", error);
+    }
+
+    $adminLoginBtn.disabled = false;
+    $adminLoginBtn.textContent = "Login as Admin";
+  });
+
+  function showAdminPanel() {
+    $loginSection.style.display = "none";
+    $adminSection.style.display = "block";
+    $authStatusBar.style.display = "flex";
+    $adminWelcome.textContent = `Welcome, ${adminUsername}`;
+    $logoutBtn.style.display = "block";
+    document.title = "Admin Panel - Customer Job Scheduler";
+  }
+
+  function hideAdminPanel() {
+    $loginSection.style.display = "block";
+    $adminSection.style.display = "none";
+    $authStatusBar.style.display = "none";
+    $adminWelcome.textContent = "";
+    $logoutBtn.style.display = "none";
+    document.title = "Admin Login - Customer Job Scheduler";
+    $errorMsg.textContent = "";
+    $adminUsername.value = "";
+    $adminPassword.value = "";
+  }
+
+  function logoutAdmin() {
+    adminToken = null;
+    adminUsername = null;
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminUsername');
+    stopBannerPolling();
+    hideAdminPanel();
+    showNotificationPopup("Logged Out", "You have been logged out successfully");
+  }
+
+  $logoutBtn.addEventListener('click', logoutAdmin);
+  $logoutBtn2.addEventListener('click', logoutAdmin);
+
+  // Check for existing admin token on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    const savedToken = localStorage.getItem('adminToken');
+    const savedUsername = localStorage.getItem('adminUsername');
+    
+    if (savedToken && savedUsername) {
+      adminToken = savedToken;
+      adminUsername = savedUsername;
+      
+      // Verify token is still valid
+      fetch(`${API_URL}/api/admin/verify`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${adminToken}`
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.valid) {
+          showAdminPanel();
+          fetchPendingUsers();
+          fetchUsersList();
+          fetchChangeHistory();
+          startBannerPolling();
+        } else {
+          logoutAdmin();
+        }
+      })
+      .catch(error => {
+        console.error("Error verifying token:", error);
+        logoutAdmin();
+      });
+    } else {
+      hideAdminPanel();
+    }
+
+    // Enable keyboard login with Enter key
+    $adminPassword.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        $adminLoginBtn.click();
+      }
+    });
+  });
+
+  // Pending users handling
+  const $pendingList = document.getElementById('pendingList');
+
+  async function fetchPendingUsers() {
+    if (!adminToken) return;
+
+    try {
+      const response = await fetch(`${API_URL}/api/admin/pending-users`, {
+        headers: {
+          'Authorization': `Bearer ${adminToken}`
+        }
+      });
+
+      if (response.ok) {
+        const pendingUsers = await response.json();
+        renderPendingUsers(pendingUsers);
+      } else {
+        throw new Error('Failed to fetch pending users');
+      }
+    } catch (error) {
+      console.error("Error fetching pending users:", error);
+      $pendingList.innerHTML = `<li class="error">Error loading pending users: ${error.message}</li>`;
+    }
+  }
+
+  function renderPendingUsers(users) {
+    $pendingList.innerHTML = '';
+    
+    if (!users || users.length === 0) {
+      $pendingList.innerHTML = `<li class="empty-row">No pending user approvals at this time.</li>`;
+      return;
+    }
+    
+    users.forEach(user => {
+      const userEl = document.createElement('li');
+      userEl.className = 'pending-user';
+      userEl.innerHTML = `
+        <span><strong>Username:</strong> ${escapeHtml(user.username)}</span>
+        <span><strong>Name:</strong> ${escapeHtml(user.name || 'Not provided')}</span>
+        <span><strong>Email:</strong> ${escapeHtml(user.email || 'Not provided')}</span>
+        <span><strong>Requested:</strong> ${formatDate(user.createdAt)}</span>
+        <span>
+          <button class="approveBtn" data-id="${user._id}">Approve</button>
+          <button class="denyBtn" data-id="${user._id}">Deny</button>
+        </span>
+      `;
+      $pendingList.appendChild(userEl);
+    });
+    
+    // Add event listeners for approve/deny buttons
+    document.querySelectorAll('.approveBtn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        handleUserApproval(this.dataset.id, true);
+      });
+    });
+    
+    document.querySelectorAll('.denyBtn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        handleUserApproval(this.dataset.id, false);
+      });
+    });
+  }
+
+  async function handleUserApproval(userId, isApproved) {
+    if (!adminToken || !userId) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/admin/user-approval`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${adminToken}`
+        },
+        body: JSON.stringify({ 
+          userId, 
+          approved: isApproved 
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        $successMsg.textContent = result.message || `User ${isApproved ? 'approved' : 'denied'} successfully`;
+        
+        // Refresh lists
+        fetchPendingUsers();
+        if (isApproved) {
+          fetchUsersList();
+        }
+        fetchChangeHistory();
+        
+        // Show notification
+        showNotificationPopup(
+          isApproved ? "User Approved" : "User Denied",
+          result.message || `User ${isApproved ? 'approved' : 'denied'} successfully`
+        );
+        
+        // Clear success message after a delay
+        setTimeout(() => {
+          $successMsg.textContent = '';
+        }, 5000);
+      } else {
+        throw new Error(`Failed to ${isApproved ? 'approve' : 'deny'} user`);
+      }
+    } catch (error) {
+      console.error(`Error ${isApproved ? 'approving' : 'denying'} user:`, error);
+      $errorMsg.textContent = error.message;
+      
+      // Clear error after a delay
+      setTimeout(() => {
+        $errorMsg.textContent = '';
+      }, 5000);
+    }
+  }
+
+  // Current users handling
+  const $userList = document.getElementById('userList');
+
+  async function fetchUsersList() {
+    if (!adminToken) return;
+
+    try {
+      const response = await fetch(`${API_URL}/api/admin/users`, {
+        headers: {
+          'Authorization': `Bearer ${adminToken}`
+        }
+      });
+
+      if (response.ok) {
+        const users = await response.json();
+        renderUsersList(users);
+      } else {
+        throw new Error('Failed to fetch users');
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      $userList.innerHTML = `<li class="error">Error loading users: ${error.message}</li>`;
+    }
+  }
+
+  function renderUsersList(users) {
+    $userList.innerHTML = '';
+    
+    if (!users || users.length === 0) {
+      $userList.innerHTML = `<li class="empty-row">No users in the system.</li>`;
+      return;
+    }
+    
+    // Sort users - admins first, then alphabetically by username
+    users.sort((a, b) => {
+      if (a.isAdmin && !b.isAdmin) return -1;
+      if (!a.isAdmin && b.isAdmin) return 1;
+      return a.username.localeCompare(b.username);
+    });
+    
+    users.forEach(user => {
+      const userEl = document.createElement('li');
+      userEl.className = 'site-user';
+      
+      const userInfoDiv = document.createElement('div');
+      userInfoDiv.className = 'site-user-info';
+      userInfoDiv.innerHTML = `
+        <span><strong>${escapeHtml(user.username)}</strong> ${user.isAdmin ? '(Admin)' : ''}</span>
+        <span class="site-user-role">${escapeHtml(user.name || '')}${user.name && user.email ? ' - ' : ''}${escapeHtml(user.email || '')}</span>
+      `;
+      
+      const actionsDiv = document.createElement('div');
+      // Don't allow removing self or the main admin account
+      if (user.username !== adminUsername && user.username !== 'admin') {
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'removeUserBtn';
+        removeBtn.textContent = 'Remove';
+        removeBtn.dataset.id = user._id;
+        removeBtn.addEventListener('click', function() {
+          confirmUserRemoval(user._id, user.username);
+        });
+        actionsDiv.appendChild(removeBtn);
+      }
+      
+      userEl.appendChild(userInfoDiv);
+      userEl.appendChild(actionsDiv);
+      $userList.appendChild(userEl);
+    });
+  }
+
+  function confirmUserRemoval(userId, username) {
+    showModal({
+      title: "Confirm User Removal",
+      content: `Are you sure you want to remove user "${username}"? This action cannot be undone.`,
+      confirmText: "Remove User",
+      onConfirm: () => removeUser(userId)
+    });
+  }
+
+  async function removeUser(userId) {
+    if (!adminToken || !userId) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/admin/user/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${adminToken}`
+        }
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        $successMsg.textContent = result.message || 'User removed successfully';
+        
+        // Refresh lists
+        fetchUsersList();
+        fetchChangeHistory();
+        
+        // Show notification
+        showNotificationPopup("User Removed", result.message || 'User removed successfully');
+        
+        // Clear success message after a delay
+        setTimeout(() => {
+          $successMsg.textContent = '';
+        }, 5000);
+      } else {
+        throw new Error('Failed to remove user');
+      }
+    } catch (error) {
+      console.error("Error removing user:", error);
+      $errorMsg.textContent = error.message;
+      
+      // Clear error after a delay
+      setTimeout(() => {
+        $errorMsg.textContent = '';
+      }, 5000);
+    }
+  }
+
+  // Site change history handling
+  const $historyTbody = document.getElementById('historyTbody');
+
+  async function fetchChangeHistory() {
+    if (!adminToken) return;
+
+    try {
+      const response = await fetch(`${API_URL}/api/admin/history`, {
+        headers: {
+          'Authorization': `Bearer ${adminToken}`
+        }
+      });
+
+      if (response.ok) {
+        const history = await response.json();
+        renderChangeHistory(history);
+      } else {
+        throw new Error('Failed to fetch change history');
+      }
+    } catch (error) {
