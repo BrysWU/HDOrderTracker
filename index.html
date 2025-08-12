@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head> 
-
   <script defer src="https://cdn.overtracking.com/t/tyDM63irGEJiZY2jK/"></script>
 
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WGZXEDCM5F"></script>
@@ -15,1543 +14,284 @@
   <meta charset="UTF-8">
   <title>Customer Job Scheduler</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
   <style>
-    :root {
-      --primary: #2563eb;
-      --primary-hover: #1746a0;
-      --secondary: #f6f8fa;
-      --danger: #ef4444;
-      --danger-hover: #c62828;
-      --border: #e5e7eb;
-      --radius: 16px;
-      --shadow: 0 2px 16px 0 #0002;
-      --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-      --dark-bg: #18181b;
-      --dark-card: #232337;
-      --dark-text: #f4f4f4;
-      --dark-secondary: #232337;
-      --dark-border: #39395a;
-      --dark-chip: #34345c;
+  :root {
+    --primary: #4361ee;
+    --primary-hover: #3a56d4;
+    --secondary: #f8f9fa;
+    --warning: #ffd166;
+    --warning-hover: #ffca3a;
+    --danger: #ef476f;
+    --danger-hover: #e63e66;
+    --success: #06d6a0;
+    --border: #e9ecef;
+    --radius: 16px;
+    --radius-sm: 8px;
+    --shadow: 0 10px 30px rgba(0,0,0,0.05);
+    --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --dark-bg: #121726;
+    --dark-card: #1a2035;
+    --dark-text: #f8f9fa;
+    --dark-secondary: #232c43;
+    --dark-border: #2d3748;
+    --dark-chip: #2d3748;
+    --banner-height: 2.5em;
+    --banner-height-sm: 70px;
+    --banner-height-xs: 60px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 100%;
+    min-width: 900px;
+    min-height: 100vh;
+    overflow-x: auto;
+  }
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--secondary);
+    color: #333;
+    min-height: 100vh;
+    padding: 0 0 4em 0;
+    transition: background var(--transition), color var(--transition);
+    line-height: 1.6;
+  }
+  body.dark {
+    background: var(--dark-bg);
+    color: var(--dark-text);
+  }
+  /* Site warning banner styles */
+  #siteWarningBanner {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0; right: 0;
+    width: 100vw;
+    z-index: 3500;
+    background: repeating-linear-gradient(
+      135deg,
+      var(--warning), var(--warning) 18px,
+      #232323 18px, #232323 28px,
+      var(--warning) 28px, var(--warning) 36px
+    );
+    box-shadow: 0 5px 24px rgba(35, 35, 35, 0.3);
+    animation: bannerStripesMove 2.5s linear infinite;
+    overflow: hidden;
+    user-select: none;
+    cursor: not-allowed;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4), 0 2px 6px rgba(35, 35, 35, 0.3);
+    letter-spacing: 0.03em;
+    text-align: center;
+    color: #1d1d1d;
+    font-size: 1.14em;
+    font-weight: 700;
+    padding: 0;
+    height: var(--banner-height);
+    line-height: var(--banner-height);
+    transition: height 0.33s cubic-bezier(0.4,0,0.2,1), line-height 0.33s cubic-bezier(0.4,0,0.2,1);
+  }
+  #siteWarningBannerText {
+    display: inline-block;
+    line-height: normal;
+    font-size: inherit;
+    font-weight: inherit;
+    padding: 0 10px;
+    background: var(--danger);
+  }
+  @keyframes bannerStripesMove {
+    0% { background-position: 0 0; }
+    100% { background-position: 80px 0; }
+  }
+  body.banner-active #siteWarningBanner {
+    display: block;
+  }
+  @media (max-width: 760px) {
+    #siteWarningBanner {
+      font-size: 1em;
+      height: var(--banner-height-sm);
+      line-height: var(--banner-height-sm);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', Arial, sans-serif;
-      background: var(--secondary);
-      color: #23272f;
-      min-height: 100vh;
-      padding: 0 0 4em 0;
-      transition: background var(--transition), color var(--transition);
+  }
+  @media (max-width: 430px) {
+    #siteWarningBanner {
+      font-size: 0.95em;
+      height: var(--banner-height-xs);
+      line-height: var(--banner-height-xs);
     }
-    body.dark {
-      background: var(--dark-bg);
-      color: var(--dark-text);
-    }
-    /* Topbar styling */
-    #authStatusBar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      z-index: 200;
-      background: #fff;
-      border-bottom: 1.5px solid var(--border);
-      box-shadow: 0 2px 14px #0001;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.7em 2.5em;
-      min-height: 70px;
-      transition: background var(--transition), border var(--transition), box-shadow var(--transition);
-    }
-    body.dark #authStatusBar {
-      background: var(--dark-card);
-      border-bottom: 1.5px solid var(--dark-border);
-      box-shadow: 0 3px 18px #0004;
-    }
-    .auth-status-bar-inner {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 100%;
-      min-height: 60px;
+  }
+  /* AuthStatusBar styles */
+  #authStatusBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    z-index: 3600;
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8em 2.5em;
+    min-height: 70px;
+    transition: background var(--transition), border var(--transition), box-shadow var(--transition), top 0.33s cubic-bezier(0.4,0,0.2,1);
+  }
+  body.dark #authStatusBar {
+    background: var(--dark-card);
+    border-bottom: 1px solid var(--dark-border);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+  body.banner-active #authStatusBar {
+    top: var(--banner-height);
+  }
+  @media (max-width: 760px) {
+    #authStatusBar { min-height: 60px; }
+    body.banner-active #authStatusBar { top: var(--banner-height-sm); }
+  }
+  @media (max-width: 430px) {
+    #authStatusBar { min-height: 50px; }
+    body.banner-active #authStatusBar { top: var(--banner-height-xs); }
+  }
+  .auth-status-bar-inner {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    min-height: 60px;
+  }
+  .topbar-left-group {
+    display: flex;
+    align-items: center;
+    gap: 1.4em;
+    min-width: 0;
+  }
+  .export-import-bar {
+    display: flex;
+    align-items: center;
+    gap: 1.1em;
+  }
+  .export-import-bar input[type="file"] {
+    display: none;
+  }
+  .export-import-bar label {
+    margin: 0;
+    cursor: pointer;
+  }
+  .topbar-center-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    flex: 1 1 0;
+  }
+  #authStatusBar h1 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--primary);
+    transition: color var(--transition);
+    text-align: center;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+  #authStatusBar .subtitle {
+    font-size: 1.1em;
+    color: #555;
+    opacity: 0.9;
+    margin-bottom: 0;
+    font-weight: 500;
+    transition: color var(--transition);
+    text-align: center;
+    white-space: nowrap;
+  }
+  body.dark #authStatusBar .subtitle { color: #cbd5e1; }
+  .topbar-right-group {
+    display: flex;
+    align-items: center;
+    gap: 1.2em;
+    min-width: 0;
+  }
+  #authStatusBar #authWelcome {
+    font-weight: 500;
+    color: var(--primary);
+    white-space: nowrap;
+    margin-right: 0.4em;
+    font-size: 1.05em;
+    transition: color var(--transition);
+  }
+  body.dark #authStatusBar #authWelcome { color: #a5b4fc; }
+  #authStatusBar #logoutBtn {
+    background: var(--danger);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 0.6em 1.5em;
+    font-size: 0.95rem;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background var(--transition), color var(--transition), box-shadow 0.2s, transform 0.2s;
+    box-shadow: 0 4px 10px rgba(239,71,111,0.15);
+  }
+  #authStatusBar #logoutBtn:hover {
+    background: var(--danger-hover);
+    box-shadow: 0 6px 15px rgba(239,71,111,0.25);
+    transform: translateY(-2px);
+  }
+  #authStatusBar[style*="display:none"] {
+    display: none !important;
+  }
+  @media (max-width: 1100px) {
+    #authStatusBar .auth-status-bar-inner {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.5em;
+      min-height: 90px;
     }
     .topbar-left-group, .topbar-right-group {
-      display: flex;
-      align-items: center;
-      gap: 1.2em;
-      min-width: 0;
+      justify-content: center;
+      width: 100%;
+      margin-bottom: 0.15em;
     }
     .topbar-center-group {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-width: 0;
-      flex: 1 1 0;
-    }
-    #authStatusBar h1 {
-      margin: 0;
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--primary);
-      letter-spacing: 0.01em;
-      transition: color var(--transition);
-      text-align: center;
-      line-height: 1.2;
-      white-space: nowrap;
-    }
-    #authStatusBar .subtitle {
-      font-size: 1.1em;
-      color: #4b5563;
-      opacity: 0.9;
-      font-weight: 500;
-      transition: color var(--transition);
-      text-align: center;
-      white-space: nowrap;
-    }
-    body.dark #authStatusBar .subtitle { color: #bcbcf7; }
-    #authStatusBar #authWelcome {
-      font-weight: 600;
-      color: var(--primary);
-      white-space: nowrap;
-      margin-right: 0.4em;
-      font-size: 1.08em;
-      transition: color var(--transition);
-    }
-    body.dark #authStatusBar #authWelcome { color: #99b7ff; }
-    #authStatusBar #logoutBtn {
-      background: var(--danger);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 0.6em 1.3em;
-      font-size: 1em;
-      font-weight: 600;
-      box-shadow: 0 2px 8px #e03f3f18;
-      transition: background var(--transition), color var(--transition);
-    }
-    #authStatusBar #logoutBtn:hover {
-      background: var(--danger-hover);
-    }
-    #authStatusBar[style*="display:none"] {
-      display: none !important;
-    }
-    @media (max-width: 900px) {
-      #authStatusBar {
-        flex-direction: column;
-        align-items: stretch;
-        padding: 0.6em 0.5em 0.6em 0.5em;
-        min-height: 90px;
-        gap: 0.5em;
-      }
-      #authStatusBar #authWelcome, #authStatusBar #logoutBtn {
-        margin-left: 0;
-        margin-top: 0.4em;
-      }
-    }
-    @media (max-width: 700px) {
-      #authStatusBar h1 { font-size: 1.3rem; }
-      #authStatusBar .subtitle { font-size: 1em; }
-    }
-    @media (max-width: 430px) {
-      #authStatusBar h1 { font-size: 1.05rem; }
-      #authStatusBar .subtitle { font-size: 0.92em; }
-    }
-    .dark-toggle-btn {
-      position: fixed;
-      bottom: 1.2em;
-      right: 2.5em;
-      z-index: 300;
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      border-radius: 999px;
-      padding: 0.5em 1.4em 0.5em 1.1em;
-      font-size: 1.08em;
-      font-family: inherit;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 2px 10px #2563eb18;
-      transition: background var(--transition), color var(--transition), box-shadow var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 0.6em;
-    }
-    .dark-toggle-btn svg {
-      height: 1.3em; width: 1.3em;
-      vertical-align: middle;
-      transition: transform 0.3s;
-    }
-    .dark-toggle-btn.active {
-      background: #232337;
-      color: #99b7ff;
-    }
-    body.dark .dark-toggle-btn {
-      background: #232337;
-      color: #99b7ff;
-      box-shadow: 0 2px 10px #0004;
-    }
-    main {
-      max-width: 950px;
-      margin: 7.5em auto 3em auto;
-      padding: 2.5em 2em 2em 2em;
-      background: #fff;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      transition: background var(--transition), box-shadow var(--transition);
-      animation: mainpop 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex;
-      flex-direction: column;
-      gap: 2.5em;
-    }
-    @keyframes mainpop {
-      0% { opacity: 0; transform: scale(0.98) translateY(30px);}
-      100% { opacity: 1; transform: scale(1) translateY(0);}
-    }
-    body.dark main {
-      background: var(--dark-card);
-      box-shadow: 0 6px 40px #0004;
-    }
-    h2 {
-      text-align: left;
-      font-weight: 700;
-      margin-bottom: 0.7em;
-      color: var(--primary);
-      letter-spacing: 0.01em;
-      transition: color var(--transition);
-      font-size: 1.35em;
-    }
-    body.dark h2 { color: #99b7ff; }
-    .subtitle {
-      text-align: left;
-      font-size: 1.1em;
-      color: #4b5563;
-      margin-bottom: 1.2em;
-      opacity: 0.86;
-      transition: color var(--transition);
-    }
-    body.dark .subtitle { color: #bcbcf7; }
-    /* Form styling */
-    form {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.3em 2em;
-      align-items: flex-end;
-      background: #f8fafc;
-      border-radius: var(--radius);
-      padding: 2em 1em 1.5em 1em;
-      box-shadow: 0 2px 10px #0001;
-      margin-bottom: 2em;
-      transition: background var(--transition);
-      animation: fade-in 0.9s;
-    }
-    @keyframes fade-in {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    body.dark form {
-      background: #232337;
-      box-shadow: 0 2px 20px #0002;
-    }
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.3em;
-    }
-    .form-group label {
-      font-weight: 500;
-      color: #444;
-      letter-spacing: 0.01em;
-      transition: color var(--transition);
-    }
-    body.dark .form-group label { color: #bcbcf7; }
-    input[type="text"], input[type="date"], textarea {
-      padding: 0.7em 1em;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-size: 1.05rem;
-      background: #fff;
-      transition: border var(--transition), background var(--transition), color var(--transition);
-      color: #23272f;
-    }
-    textarea {
-      min-height: 38px;
-      max-height: 120px;
-      resize: vertical;
-      font-family: inherit;
-    }
-    body.dark input[type="text"],
-    body.dark input[type="date"],
-    body.dark textarea {
-      background: var(--dark-secondary);
-      border: 1.5px solid var(--dark-border);
-      color: var(--dark-text);
-    }
-    input[type="text"]:focus, input[type="date"]:focus, textarea:focus {
-      border: 1.5px solid var(--primary);
-      outline: none;
-      background: #e8f0fe;
-    }
-    body.dark input[type="text"]:focus,
-    body.dark input[type="date"]:focus,
-    body.dark textarea:focus {
-      background: #232337;
-    }
-    .form-actions {
-      grid-column: 1 / -1;
-      display: flex;
-      justify-content: flex-end;
-      gap: 1em;
-      margin-top: 1.2em;
-    }
-    button, .button {
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 0.7em 1.8em;
-      font-size: 1.03rem;
-      font-family: inherit;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 3px 8px #2563eb12;
-      transition: background var(--transition), box-shadow var(--transition), color var(--transition);
-      outline: none;
-      position: relative;
-      overflow: hidden;
-    }
-    button[type="button"], .button.secondary {
-      background: #fff;
-      color: var(--primary);
-      border: 1.5px solid var(--primary);
-      box-shadow: none;
-      transition: background var(--transition), color var(--transition), border var(--transition);
-    }
-    body.dark button[type="button"], body.dark .button.secondary {
-      background: var(--dark-secondary);
-      color: #99b7ff;
-      border: 1.5px solid #99b7ff;
-    }
-    button:hover, .button:hover {
-      background: var(--primary-hover);
-      color: #fff;
-      box-shadow: 0 6px 24px #2563eb22;
-    }
-    button[type="button"]:hover, .button.secondary:hover {
-      background: var(--primary);
-      color: #fff;
-    }
-    /* Table styling */
-    .table-wrapper {
-      overflow-x: auto;
-      background: #fff;
-      border-radius: var(--radius);
-      box-shadow: 0 2px 8px #0001;
-      margin-top: 1.5em;
-      transition: background var(--transition), box-shadow var(--transition);
-      animation: fade-in 1.1s;
-      padding: 1.2em 0.5em 0.5em 0.5em;
-    }
-    body.dark .table-wrapper {
-      background: var(--dark-card);
-      box-shadow: 0 4px 24px #0003;
-    }
-    table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      min-width: 900px;
-      font-size: 1rem;
-      background: #fff;
-      border-radius: var(--radius);
-      overflow: hidden;
-      transition: background var(--transition);
-      box-shadow: 0 2px 8px #2563eb0a;
-    }
-    body.dark table { background: var(--dark-card); }
-    th, td {
-      padding: 0.85em 0.7em;
-      border-bottom: 1px solid var(--border);
-      transition: background var(--transition), color var(--transition), border var(--transition);
-      text-align: center;
-    }
-    body.dark th, body.dark td {
-      border-bottom: 1px solid var(--dark-border);
-      color: var(--dark-text);
-    }
-    th {
-      background: #f3f6fa;
-      color: #23272f;
-      font-weight: 700;
-      letter-spacing: 0.01em;
-      border-bottom: 2px solid var(--border);
-      transition: background var(--transition), color var(--transition), border var(--transition);
-      font-size: 1.04em;
-    }
-    body.dark th {
-      background: var(--dark-secondary);
-      color: #99b7ff;
-      border-bottom: 2px solid var(--dark-border);
-    }
-    td {
-      color: #374151;
-      font-size: 0.99rem;
-      vertical-align: middle;
-      transition: color var(--transition);
-      white-space: pre-line;
-      text-align: center;
-    }
-    body.dark td { color: #d5e4ff; }
-    tr:last-child td { border-bottom: none; }
-    .empty-row td {
-      text-align: center;
-      color: #888;
-      font-style: italic;
-      background: #f9fafb;
-      transition: background var(--transition), color var(--transition);
-    }
-    body.dark .empty-row td {
-      background: var(--dark-secondary);
-      color: #999fc8;
-    }
-    .tooltip {
-      position: relative;
-      cursor: pointer;
-    }
-    .tooltip[data-tooltip]:hover:after, .tooltip[data-tooltip]:focus:after {
-      content: attr(data-tooltip);
-      position: absolute;
-      z-index: 1000;
-      left: 50%;
-      bottom: 100%;
-      transform: translateX(-50%);
-      background: #232337;
-      color: #fff;
-      font-size: 0.97em;
-      padding: 0.42em 0.9em;
-      border-radius: 8px;
-      white-space: pre-line;
-      box-shadow: 0 3px 14px #0003;
-      opacity: 1;
-      pointer-events:none;
-      margin-bottom: 8px;
-      min-width: 120px;
-      max-width: 300px;
-      text-align: center;
-      transition: opacity 0.14s;
-    }
-    .tooltip[data-tooltip]:hover:before, .tooltip[data-tooltip]:focus:before {
-      content: '';
-      position: absolute;
-      left: 50%;
-      bottom: 100%;
-      transform: translateX(-50%);
-      margin-bottom: 2px;
-      border: 6px solid transparent;
-      border-top: none;
-      border-bottom: 6px solid #232337;
-      z-index: 1001;
-    }
-    body.dark .tooltip[data-tooltip]:hover:after, body.dark .tooltip[data-tooltip]:focus:after {
-      background: #34345c;
-      color: #d5e4ff;
-      border-color: #39395a;
-    }
-    body.dark .tooltip[data-tooltip]:hover:before, body.dark .tooltip[data-tooltip]:focus:before {
-      border-bottom: 6px solid #34345c;
-    }
-    /* Modal Styles */
-    .modal-overlay {
-      position: fixed;
-      z-index: 5000;
-      left: 0; top: 0; width: 100vw; height: 100vh;
-      background: rgba(30, 30, 50, 0.25);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.3s;
-    }
-    .modal-popup {
-      background: #fff;
-      color: #23272f;
-      border-radius: 18px;
-      min-width: 320px;
-      max-width: 90vw;
-      box-shadow: 0 8px 32px #1a233877;
-      padding: 2em 2em 1.5em 2em;
-      position: relative;
-      text-align: center;
-      animation: fade-in 0.2s;
-      border: 2.5px solid var(--primary);
-    }
-    .modal-popup h3 {
-      margin-bottom: 1.1em;
-      color: var(--primary);
-      font-size: 1.2em;
-    }
-    .modal-popup .modal-actions {
-      margin-top: 1.2em;
-      display: flex;
-      justify-content: center;
-      gap: 1.2em;
-    }
-    .modal-popup button {
-      min-width: 90px;
-      padding: 0.7em 1.5em;
-      font-size: 1.02em;
-      border-radius: 8px;
-      font-weight: 600;
-      border: none;
-      transition: background 0.2s, color 0.2s;
-    }
-    .modal-popup .modal-cancel-btn {
-      background: #fff;
-      color: var(--primary);
-      border: 1.5px solid var(--primary);
-    }
-    .modal-popup .modal-cancel-btn:hover {
-      background: var(--primary);
-      color: #fff;
-    }
-    .modal-popup .modal-danger-btn {
-      background: var(--danger);
-      color: #fff;
-      border: none;
-    }
-    .modal-popup .modal-danger-btn:hover {
-      background: var(--danger-hover);
-    }
-    body.dark .modal-popup {
-      background: var(--dark-card);
-      color: #d5e4ff;
-      border: 2.5px solid #99b7ff;
-    }
-    body.dark .modal-popup h3 { color: #99b7ff;}
-    body.dark .modal-popup .modal-cancel-btn {
-      background: var(--dark-secondary);
-      color: #99b7ff;
-      border: 1.5px solid #99b7ff;
-    }
-    body.dark .modal-popup .modal-cancel-btn:hover {
-      background: var(--primary);
-      color: #fff;
-    }
-    @media (max-width: 550px) {
-      form { grid-template-columns: 1fr; gap: 1em 0.3em; padding: 1.2em 0.7em 0.7em 0.7em; }
-      .modal-popup { min-width: 90vw; padding: 1em 0.5em 1em 0.5em; }
-      main { padding: 1.2em 0.5em 1.2em 0.5em; }
-    }
-    @media (max-width: 450px) {
-      .modal-popup { min-width: 98vw; padding: 0.7em 0.2em 0.7em 0.2em; }
-      main { padding: 0.7em 0.2em 0.7em 0.2em; }
-    }
-  </style>
-</head>
-<body>
-  <!-- Notification Popup (for job updates) -->
-<div id="notificationPopup" style="display:none;">
-  <button class="notif-close" title="Close notification" onclick="hideNotificationPopup()">&times;</button>
-  <div class="notif-title">Job Update</div>
-  <div class="notif-sub"></div>
-</div>
-  <div id="siteWarningBanner">
-    <span>
-      <div id="siteWarningBannerText">
-        <i class="fa-solid fa-triangle-exclamation" style="color:#232323;font-size:1.2em;margin-right:0.6em;"></i>
-        <span>
-          This website is undergoing maintenance or updates. Service may be interrupted. Thank you for your patience.
-        </span>
-        <i class="fa-solid fa-triangle-exclamation" style="color:#232323;font-size:1.2em;margin-left:0.6em;"></i>
-      </div>
-    </span>
-  </div>
-  <div id="authStatusBar" class="auth-status-bar">
-    <div class="auth-status-bar-inner">
-      <div class="topbar-left-group">
-        <div class="export-import-bar">
-          <button class="button" id="exportBtn">Export Jobs</button>
-       <!--   <label>
-            <input type="file" id="importFile" accept=".json">
-            <span class="button secondary" tabindex="0">Import Jobs</span>
-          </label>-->
-        </div>
-      </div>
-      <div class="topbar-center-group">
-        <h1>Customer Job Scheduler</h1>
-        <div class="subtitle">For HD Installations</div>
-      </div>
-      <div class="topbar-right-group">
-        <span id="authWelcome">Logged in as brys</span>
-        <button class="button secondary" id="logoutBtn">Logout</button>
-      </div>
-    </div>
-  </div>
-  <button class="dark-toggle-btn" id="darkToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-    <svg id="sunIcon" style="display:inline;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="5"/><g stroke-width="2"><path d="M12 1v2"/><path d="M12 21v2"/><path d="M4.22 4.22l1.42 1.42"/><path d="M18.36 18.36l1.42 1.42"/><path d="M1 12h2"/><path d="M21 12h2"/><path d="M4.22 19.78l1.42-1.42"/><path d="M18.36 5.64l1.42-1.42"/></g></svg>
-    <svg id="moonIcon" style="display:none;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 1 0 9.79 9.79z"/></svg>
-    <span id="darkToggleText">Dark Mode</span>
-  </button>
-  <div id="backendStatusBar" style="display: none;position: fixed;position-area: center;">
-    <span id="backendStatusMsg" style="margin-left:0.8em;font-size:1.1em;color:#2563eb;">
-      Checking backend status
-      <span class="backend-loader" id="backendLoader"></span>
-    </span>
-  </div>
-  <h1 id="loginTitle" style="display:none;">HD Customer Scheduler</h1>
-  <div id="authSection" class="auth-section" style="display:none;">
-    <div class="animated-border-box-glow"></div>
-  <div class="animated-border-box"></div>
-    <h2 id="authTitle">Login</h2>
-    <input type="text" id="authUsername" placeholder="Username" autocomplete="username">
-    <input type="password" id="authPassword" placeholder="Password" autocomplete="current-password">
-    <button class="button" id="loginBtn">Login</button>
-    <button class="button secondary" id="switchToSignupBtn">Create Account</button>
-    <div style="margin-top:0.8em;color:#e03f3f;font-weight:600;" id="authError"></div>
-  </div>
-  <div id="signupSection" class="auth-section" style="display:none;">
-    <div class="animated-border-box-glow"></div>
-  <div class="animated-border-box"></div>
-    <h2>Create Account</h2>
-    <input type="text" id="signupUsername" placeholder="Username" autocomplete="username">
-    <input type="password" id="signupPassword" placeholder="Password" autocomplete="new-password">
-    <button class="button" id="signupBtn">Sign Up</button>
-    <button class="button secondary" id="switchToLoginBtn">Back to Login</button>
-    <div style="margin-top:0.8em;color:#e03f3f;font-weight:600;" id="signupError"></div>
-  </div>
-  <main id="mainApp" style="display:none;">
-    <span class="minimize-icon" id="minimizeJobFormBtn" title="Hide/Show Create Job">
-      <i class="fa-solid fa-minimize"></i>
-      <i class="fa-solid fa-maximize"></i>
-    </span>
-    <form id="job-form" autocomplete="off">
-      <div class="form-group">
-        <label for="customerName">Customer Name</label>
-        <input type="text" id="customerName" required autocomplete="off" placeholder="Enter customer name...">
-      </div>
-      <div class="form-group">
-        <label for="jobDescription">Job Description</label>
-        <input type="text" id="jobDescription" required autocomplete="off" placeholder="E.g. Install Dishwasher">
-      </div>
-      <div class="form-group">
-        <label for="jobLocation">Job Location</label>
-        <input type="text" id="jobLocation" autocomplete="off" placeholder="Enter job address or site...">
-      </div>
-      <div class="form-group">
-        <label for="deliveryDate">Delivery Date (optional)</label>
-        <input type="date" id="deliveryDate">
-      </div>
-      <div class="form-group">
-        <label for="proposedScheduledDate">Proposed Scheduled Date (optional)</label>
-        <input type="date" id="proposedScheduledDate">
-      </div>
-      <div class="form-group">
-        <label for="scheduledDate">Scheduled Date (optional)</label>
-        <input type="date" id="scheduledDate">
-      </div>
-      <div class="form-group" style="grid-column: 1 / -1;">
-        <label for="notes">Notes (optional)</label>
-        <textarea id="notes" rows="4" placeholder="Add any notes about this job (optional)"></textarea>
-      </div>
-      <div class="form-actions">
-        <button type="submit" id="submitBtn">Add Job</button>
-        <button type="button" class="button secondary" id="clearBtn">Clear Form</button>
-        <button type="button" class="button" id="cancelEditBtn" style="display:none;">Cancel Edit</button>
-      </div>
-    </form>
-    <!-- Job List header row with live search bar -->
-    <div class="joblist-header-row">
-  <div class="animated-border-parent" style="position:relative; max-width:250px; min-width:230px;">
-    <div class="animated-border-box-glow"></div>
-    <div class="animated-border-box"></div>
-    <input id="customerSearchBar" type="text" placeholder="Search customer name..." autocomplete="on" />
-  </div>   
-      <div class="joblist-header-center">
-        <h2>Job List</h2>
-      </div>
-    </div>
-    <div class="table-wrapper">
-      <table id="jobTable">
-        <thead>
-          <tr>
-            <th class="tooltip" data-tooltip="Customer Name">Customer Name</th>
-            <th class="tooltip" data-tooltip="Job Description">Job Description</th>
-            <th class="tooltip" data-tooltip="Job Location">Location</th>
-            <th class="tooltip" data-tooltip="Delivery Date">Delivery Date</th>
-            <th class="tooltip" data-tooltip="Proposed Scheduled Date">Proposed Scheduled Date</th>
-            <th class="tooltip" data-tooltip="Scheduled Date">Scheduled Date</th>
-            <th class="tooltip" data-tooltip="Notes about this job">Notes</th>
-            <th class="tooltip" data-tooltip="Actions for this job">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
-    </div>
-  </main>
-  <!-- Job History Modal -->
-  <div id="historyModal">
-    <div class="modal-content">
-      <button class="modal-close" id="historyModalClose" aria-label="Close">&times;</button>
-      <h3>Job Change History</h3>
-      <div id="historyContent">
-        <div style="text-align:center;color:#888;">Loading...</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Custom Confirmation Modal -->
-  <div id="modalOverlay" class="modal-overlay" tabindex="-1">
-    <div class="modal-popup" id="modalPopup">
-      <h3 id="modalTitle">Are you sure?</h3>
-      <div id="modalContent"></div>
-      <div class="modal-actions">
-        <button class="modal-cancel-btn" id="modalCancelBtn">Cancel</button>
-        <button class="modal-danger-btn" id="modalConfirmBtn">Delete</button>
-      </div>
-    </div>
-  </div>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script>
-const API_URL = 'https://pfback-dcuc.onrender.com';
-
-let auth = { token: null, username: null };
-let jobs = [];
-let editingJobId = null;
-let liveUpdateTimer = null;
-let lastJobsHash = null;
-const $authSection    = document.getElementById('authSection');
-const $loginTitle     = document.getElementById('loginTitle');
-const $signupSection  = document.getElementById('signupSection');
-const $mainApp        = document.getElementById('mainApp');
-const $authStatusBar  = document.getElementById('authStatusBar');
-const $authWelcome    = document.getElementById('authWelcome');
-const $logoutBtn      = document.getElementById('logoutBtn');
-const $submitBtn      = document.getElementById('submitBtn');
-const $cancelEditBtn  = document.getElementById('cancelEditBtn');
-const $backendStatusBar = document.getElementById('backendStatusBar');
-const $backendStatusMsg = document.getElementById('backendStatusMsg');
-const $backendLoader = document.getElementById('backendLoader');
-
-const $historyModal = document.getElementById('historyModal');
-const $historyModalClose = document.getElementById('historyModalClose');
-const $historyContent = document.getElementById('historyContent');
-
-const $notifPopup = document.getElementById('notificationPopup');
-const $notifSub = $notifPopup ? $notifPopup.querySelector('.notif-sub') : null;
-let notifTimer = null;
-function hideNotificationPopup() {
-  if ($notifPopup) {
-    $notifPopup.classList.remove('visible');
-    setTimeout(() => { $notifPopup.style.display = "none"; }, 500);
-    if (notifTimer) clearTimeout(notifTimer);
-  }
-}
-function showNotificationPopup(mainText, subText) {
-  if (!$notifPopup) return;
-  $notifPopup.querySelector('.notif-title').innerText = mainText || "Job Update";
-  $notifSub.innerText = subText || "";
-  $notifPopup.style.display = "flex";
-  setTimeout(() => {
-    $notifPopup.classList.add('visible');
-  }, 40);
-  if (notifTimer) clearTimeout(notifTimer);
-  notifTimer = setTimeout(hideNotificationPopup, 7000);
-}
-window.hideNotificationPopup = hideNotificationPopup;
-
-// --- Custom Modal Logic ---
-const modalOverlay = document.getElementById('modalOverlay');
-const modalTitle = document.getElementById('modalTitle');
-const modalContent = document.getElementById('modalContent');
-const modalCancelBtn = document.getElementById('modalCancelBtn');
-const modalConfirmBtn = document.getElementById('modalConfirmBtn');
-let modalCallback = null;
-
-function showModal(options) {
-  modalTitle.textContent = options.title || "Are you sure?";
-  modalContent.textContent = options.content || "";
-  modalConfirmBtn.textContent = options.confirmText || "Delete";
-  modalCallback = options.onConfirm || null;
-  modalOverlay.style.display = "flex";
-  setTimeout(() => { modalCancelBtn.focus(); }, 100);
-}
-function closeModal() {
-  modalOverlay.style.display = "none";
-  modalCallback = null;
-}
-modalCancelBtn.onclick = closeModal;
-modalConfirmBtn.onclick = function() {
-  if (modalCallback) modalCallback();
-  closeModal();
-};
-modalOverlay.onclick = function(e) {
-  if (e.target === modalOverlay) closeModal();
-};
-modalOverlay.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') {
-    closeModal();
-  } else if (e.key === 'Tab') {
-    // Focus trap
-    const focusable = modalOverlay.querySelectorAll('button');
-    if (focusable.length === 0) return;
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (e.shiftKey && document.activeElement === first) {
-      e.preventDefault();
-      last.focus();
-    } else if (!e.shiftKey && document.activeElement === last) {
-      e.preventDefault();
-      first.focus();
+      margin: 0.3em 0;
     }
   }
-});
-
-let lastHistoryTimestamp = null;
-let siteHistoryPollingTimer = null;
-let siteHistoryInitialized = false;
-
-// --- CHANGED: notification logic for restored job ---
-function extractJobEventNotification(entry) {
-  if (!entry || !entry.action || !entry.targetName) return null;
-  let mainText = "Job Update";
-  let subText = "";
-  let detailsBy = (entry.details && entry.details.user) || entry.user || "";
-  if (entry.action.includes("job")) {
-    if (entry.action === "updated job" && entry.details && entry.details.changes) {
-      const fields = Object.keys(entry.details.changes).map(f => {
-        switch(f){
-          case "notes": return "notes updated";
-          case "scheduledDate": return "scheduled date updated";
-          case "proposedScheduledDate": return "proposed scheduled date updated";
-          case "deliveryDate": return "delivery date updated";
-          case "jobDescription": return "job description updated";
-          case "jobLocation": return "job location updated";
-          case "customerName": return "customer name updated";
-          case "status": return "status updated";
-          case "amount": return "amount updated";
-          default: return f + " updated";
-        }
-      }).join(", ");
-      subText = `Job "${entry.targetName}": ${fields} by ${detailsBy}`;
-    } else if (entry.action === "deleted job") {
-      subText = `Job "${entry.targetName}" deleted by ${detailsBy}`;
-    } else if (entry.action === "created job") {
-      subText = `Job "${entry.targetName}" created by ${detailsBy}`;
-    } else if (entry.action === "restored job") {
-      // Only show job restored by admin
-      subText = `Job "${entry.targetName}" Restored by Admin`;
-    } else {
-      subText = `Job "${entry.targetName}" ${entry.action} by ${detailsBy}`;
-    }
-    return { mainText, subText };
+  @media (max-width: 700px) {
+    #authStatusBar h1 { font-size: 1.4rem; }
+    #authStatusBar .subtitle { font-size: 1em; }
+    main, #authSection, #signupSection { margin-top: 100px; }
   }
-  return null;
-}
-
-async function pollSiteHistoryForJobEvents() {
-  try {
-    const r = await fetch(API_URL+'/api/job-notifications', {
-      headers: auth.token ? { 'Authorization': auth.token } : {}
-    });
-    const res = await r.json();
-    if (!res.ok || !Array.isArray(res.entries)) return;
-    let entries = res.entries;
-    if (!siteHistoryInitialized) {
-      if (entries.length > 0) {
-        lastHistoryTimestamp = entries[0].timestamp;
-      }
-      siteHistoryInitialized = true;
-    } else {
-      if (lastHistoryTimestamp) {
-        entries = entries.filter(e => e.timestamp > lastHistoryTimestamp);
-      }
-      for (const entry of entries.reverse()) {
-        const notif = extractJobEventNotification(entry);
-        if (notif) showNotificationPopup(notif.mainText, notif.subText);
-      }
-      if (res.entries.length > 0) {
-        lastHistoryTimestamp = res.entries[0].timestamp;
-      }
-    }
-  } catch (e) {}
-  siteHistoryPollingTimer = setTimeout(pollSiteHistoryForJobEvents, 7000);
-}
-
-function showBackendLoader(show) {
-  if (show) {
-    $backendLoader.style.display = "inline-grid";
-  } else {
-    $backendLoader.style.display = "none";
+  @media (max-width: 430px) {
+    #authStatusBar h1 { font-size: 1.05rem; }
+    #authStatusBar .subtitle { font-size: 0.92em; }
+    main, #authSection, #signupSection { margin-top: 110px; }
+    .auth-status-bar-inner { flex-direction: column !important; }
   }
-}
-
-function showLogin() {
-  $loginTitle.style.display = 'block';
-  $authSection.style.display = 'block';
-  $signupSection.style.display = 'none';
-  $mainApp.style.display = 'none';
-  $authStatusBar.style.display = 'none';
-  document.getElementById('authTitle').innerText = 'Login';
-  document.getElementById('authError').innerText = '';
-  document.getElementById('authUsername').value = '';
-  document.getElementById('authPassword').value = '';
-  stopLiveUpdates();
-  if (siteHistoryPollingTimer) clearTimeout(siteHistoryPollingTimer);
-  lastHistoryTimestamp = null;
-  siteHistoryInitialized = false;
-}
-function showSignup() {
-  $signupSection.style.display = 'block';
-  $authSection.style.display = 'none';
-  $mainApp.style.display = 'none';
-  $authStatusBar.style.display = 'none';
-  document.getElementById('signupError').innerText = '';
-  document.getElementById('signupUsername').value = '';
-  document.getElementById('signupPassword').value = '';
-  stopLiveUpdates();
-  if (siteHistoryPollingTimer) clearTimeout(siteHistoryPollingTimer);
-  lastHistoryTimestamp = null;
-  siteHistoryInitialized = false;
-}
-function showMain() {
-  $loginTitle.style.display = 'none';
-  $authSection.style.display = 'none';
-  $signupSection.style.display = 'none';
-  $mainApp.style.display = '';
-  $authStatusBar.style.display = 'flow';
-  $authWelcome.innerText = `Logged in as ${auth.username}`;
-  startLiveUpdates();
-  if (siteHistoryPollingTimer) clearTimeout(siteHistoryPollingTimer);
-  lastHistoryTimestamp = null;
-  siteHistoryInitialized = false;
-  pollSiteHistoryForJobEvents();
-}
-function doLogout() {
-  localStorage.removeItem('auth');
-  auth = {token:null, username:null};
-  showLogin();
-  clearForm();
-  jobs = [];
-  renderJobs();
-  stopLiveUpdates();
-  if (siteHistoryPollingTimer) clearTimeout(siteHistoryPollingTimer);
-  lastHistoryTimestamp = null;
-  siteHistoryInitialized = false;
-}
-
-document.getElementById('loginBtn').onclick = async () => {
-  const username = document.getElementById('authUsername').value;
-  const password = document.getElementById('authPassword').value;
-  document.getElementById('authError').innerText = '';
-  showBackendLoader(true);
-  try {
-    const r = await fetch(API_URL+'/api/login', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({username, password})
-    });
-    const res = await r.json();
-    if (res.error && res.error === "Account pending approval") {
-      document.getElementById('authError').innerText = "Account pending admin approval. Please wait.";
-      showBackendLoader(false);
-      return;
-    }
-    if (!res.ok) throw new Error(res.error || "Login failed");
-    auth.token = res.token;
-    auth.username = res.username;
-    localStorage.setItem('auth', JSON.stringify(auth));
-    await loadJobs();
-    showMain();
-  } catch(e) {
-    document.getElementById('authError').innerText = e.message;
+  .dark-toggle-btn {
+    position: fixed;
+    bottom: 1.5em;
+    right: 2.5em;
+    z-index: 300;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 0.6em 1.4em;
+    font-size: 1em;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(67,97,238,0.25);
+    transition: background var(--transition), color var(--transition), box-shadow var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
   }
-  showBackendLoader(false);
-};
-document.getElementById('switchToSignupBtn').onclick = showSignup;
-document.getElementById('switchToLoginBtn').onclick = showLogin;
-document.getElementById('signupBtn').onclick = async () => {
-  const username = document.getElementById('signupUsername').value;
-  const password = document.getElementById('signupPassword').value;
-  document.getElementById('signupError').innerText = '';
-  showBackendLoader(true);
-  try {
-    const r = await fetch(API_URL+'/api/signup', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({username, password})
-    });
-    const res = await r.json();
-    if (res.pendingApproval) {
-      document.getElementById('signupError').style.color = "#2563eb";
-      document.getElementById('signupError').innerText = "Request submitted, waiting for admin approval.";
-      return;
-    }
-    if (!res.ok) throw new Error(res.error || "Signup failed");
-    showLogin();
-    document.getElementById('authUsername').value = username;
-    document.getElementById('authPassword').value = '';
-  } catch(e) {
-    document.getElementById('signupError').innerText = e.message;
-  }
-  showBackendLoader(false);
-};
-$logoutBtn.onclick = doLogout;
-
-function getJobsHash(jobsArr) {
-  return JSON.stringify(jobsArr.map(j => [
-    j.id, j.customerName, j.jobDescription, j.jobLocation, j.deliveryDate, j.proposedScheduledDate, j.scheduledDate, j.notes, j.addedBy, j.status, j.amount
-  ]));
-}
-
-async function loadJobs({ silent = false } = {}) {
-  if (!auth.token) return;
-  if (!silent) showBackendLoader(true);
-  try {
-    const r = await fetch(API_URL+'/api/jobs', {
-      method:'GET',
-      headers: {'Authorization': auth.token}
-    });
-    if (r.status === 401) {
-      doLogout();
-      alert("Session expired or logged out. Please log in again.");
-      showBackendLoader(false);
-      return;
-    }
-    const res = await r.json();
-    jobs = res.jobs || [];
-    renderJobs();
-    lastJobsHash = getJobsHash(jobs);
-  } catch (e) {
-    jobs = [];
-    renderJobs();
-  }
-  showBackendLoader(false);
-}
-
-function startLiveUpdates() {
-  stopLiveUpdates();
-  liveUpdateTimer = setInterval(async () => {
-    if (!auth.token) {
-      stopLiveUpdates();
-      return;
-    }
-    try {
-      const r = await fetch(API_URL+'/api/jobs', {
-        method: 'GET',
-        headers: {'Authorization': auth.token}
-      });
-      if (r.status === 401) {
-        doLogout();
-        alert("Session expired or logged out. Please log in again.");
-        stopLiveUpdates();
-        return;
-      }
-      const res = await r.json();
-      if (Array.isArray(res.jobs)) {
-        const newHash = getJobsHash(res.jobs);
-        if (newHash !== lastJobsHash) {
-          jobs = res.jobs;
-          lastJobsHash = newHash;
-          renderJobs();
-        }
-      }
-    } catch (e) {}
-  }, 5000);
-}
-function stopLiveUpdates() {
-  if (liveUpdateTimer) clearInterval(liveUpdateTimer);
-  liveUpdateTimer = null;
-}
-
-async function addJob(job) {
-  if (!auth.token) return;
-  showBackendLoader(true);
-  const res = await fetch(API_URL+'/api/jobs', {
-    method:'POST',
-    headers: {'Content-Type':'application/json', 'Authorization': auth.token},
-    body: JSON.stringify(job)
-  });
-  const data = await res.json();
-  showBackendLoader(false);
-  if (data.ok) {
-    await loadJobs({silent:true});
-  } else {
-    alert(data.error || "Failed to add job.");
-  }
-}
-async function updateJob(jobId, job) {
-  if (!auth.token) return;
-  showBackendLoader(true);
-  const res = await fetch(API_URL+'/api/jobs/' + jobId, {
-    method:'PUT',
-    headers: {'Content-Type':'application/json', 'Authorization': auth.token},
-    body: JSON.stringify(job)
-  });
-  const data = await res.json();
-  showBackendLoader(false);
-  if (data.ok) {
-    await loadJobs({silent:true});
-  } else {
-    alert(data.error || "Failed to update job.");
-  }
-}
-async function deleteJob(idx) {
-  const job = jobs[idx];
-  if (!job || !job.id) return alert("Job not found.");
-  showModal({
-    title: "Delete Job",
-    content: `Delete job "${job.customerName}"? This cannot be undone.`,
-    confirmText: "Delete",
-    onConfirm: async function() {
-      showBackendLoader(true);
-      const res = await fetch(API_URL + '/api/jobs/' + job.id, {
-        method: 'DELETE',
-        headers: {'Authorization': auth.token}
-      });
-      const data = await res.json();
-      showBackendLoader(false);
-      if (data.ok) {
-        await loadJobs({silent:true});
-      } else {
-        alert(data.error || "Failed to delete job.");
-      }
-    }
-  });
-}
-function getFormData() {
-  return {
-    customerName: document.getElementById('customerName').value.trim(),
-    jobDescription: document.getElementById('jobDescription').value.trim(),
-    jobLocation: document.getElementById('jobLocation').value.trim(),
-    deliveryDate: document.getElementById('deliveryDate').value,
-    proposedScheduledDate: document.getElementById('proposedScheduledDate').value,
-    scheduledDate: document.getElementById('scheduledDate').value,
-    notes: document.getElementById('notes').value.trim(),
-    status: 'scheduled',
-    amount: 0
-  };
-}
-function setFormData(job) {
-  document.getElementById('customerName').value = job.customerName || "";
-  document.getElementById('jobDescription').value = job.jobDescription || "";
-  document.getElementById('jobLocation').value = job.jobLocation || "";
-  document.getElementById('deliveryDate').value = job.deliveryDate || "";
-  document.getElementById('proposedScheduledDate').value = job.proposedScheduledDate || "";
-  document.getElementById('scheduledDate').value = job.scheduledDate || "";
-  document.getElementById('notes').value = job.notes || "";
-}
-function clearForm() {
-  document.getElementById('job-form').reset();
-  editingJobId = null;
-  $submitBtn.textContent = "Add Job";
-  $cancelEditBtn.style.display = "none";
-}
-function formatDateToMMDDYYYY(dateStr) {
-  if (!dateStr || dateStr.length !== 10) return "";
-  const [year, month, day] = dateStr.split('-');
-  return `${month}-${day}-${year}`;
-}
-function displayDateOrText(dateStr, emptyText) {
-  if (!dateStr || dateStr.length !== 10) return `<span style="opacity:.7;font-style:italic;">${emptyText}</span>`;
-  return formatDateToMMDDYYYY(dateStr);
-}
-function formatTimestamp(ts) {
-  if (!ts) return "";
-  try {
-    const date = new Date(ts);
-    return date.toLocaleString();
-  } catch { return ts; }
-}
-
-const $customerSearchBar = document.getElementById('customerSearchBar');
-let customerSearchFilter = "";
-if ($customerSearchBar) {
-  $customerSearchBar.addEventListener('input', function() {
-    customerSearchFilter = $customerSearchBar.value.trim().toLowerCase();
-    renderJobs();
-  });
-}
-
-function renderJobs() {
-  const tbody = document.getElementById('jobTable').querySelector('tbody');
-  tbody.innerHTML = '';
-  let filteredJobs = jobs;
-  if (customerSearchFilter) {
-    filteredJobs = jobs.filter(job =>
-      String(job.customerName || '').toLowerCase().includes(customerSearchFilter)
-    );
-  }
-  if (filteredJobs.length === 0) {
-    const tr = document.createElement('tr');
-    tr.className = 'empty-row';
-    const td = document.createElement('td');
-    td.colSpan = 8;
-    td.textContent = customerSearchFilter ? "No jobs found." : "No jobs yet. Please add a job above.";
-    tr.appendChild(td);
-    tbody.appendChild(tr);
-    return;
-  }
-  filteredJobs.forEach((job, idx) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="tooltip" data-tooltip="Customer Name">${escapeHTML(job.customerName)}</td>
-      <td class="tooltip" data-tooltip="Job Description">${escapeHTML(job.jobDescription)}</td>
-      <td class="tooltip" data-tooltip="Job Location">${escapeHTML(job.jobLocation)}</td>
-      <td class="tooltip" data-tooltip="Delivery Date">${displayDateOrText(job.deliveryDate, "No Delivery Date")}</td>
-      <td class="tooltip" data-tooltip="Proposed Scheduled Date">${displayDateOrText(job.proposedScheduledDate, "No Proposed Date")}</td>
-      <td class="tooltip" data-tooltip="Scheduled Date">${displayDateOrText(job.scheduledDate, "Job not Scheduled")}</td>
-      <td class="tooltip" data-tooltip="Notes (if any)">
-        <span style="white-space: pre-line;">${escapeHTML(job.notes || "")}</span>
-        <span class="job-added-by tooltip" data-tooltip="User who added the job">Added by: ${escapeHTML(job.addedBy || "unknown")}</span>
-      </td>
-      <td>
-        <button class="action-btn edit-btn" title="Edit Job" onclick="editJob('${job.id || ""}')"><i class="fa-solid fa-pen"></i></button>
-        <button class="action-btn his-btn" title="View History" onclick="showJobHistory('${job.id || ""}')"><i class="fa-solid fa-clock-rotate-left"></i></button>
-        <button class="action-btn danger-btn" title="Delete Job" onclick="deleteJob(${idx})"><i class="fa-solid fa-trash"></i></button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-  Array.from(tbody.children).forEach((row, i) => {
-    row.style.opacity = 0;
-    setTimeout(() => {
-      row.style.transition = 'opacity 0.6s cubic-bezier(0.4,0,0.2,1)';
-      row.style.opacity = 1;
-    }, 80 * i);
-  });
-}
-function escapeHTML(str) {
-  return String(str).replace(/[&<>"']/g, function (m) {
-    return ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#39;'
-    })[m];
-  });
-}
-window.editJob = function(id) {
-  const job = jobs.find(j => j.id === id);
-  if (!job) return alert("Job not found.");
-  setFormData(job);
-  editingJobId = id;
-  $submitBtn.textContent = "Save Changes";
-  $cancelEditBtn.style.display = "";
-  var mainApp = document.getElementById('mainApp');
-  if (mainApp.classList.contains('minimized')) {
-    mainApp.classList.remove('minimized');
-  }
-  window.scrollTo({top: 0, behavior: "smooth"});
-}
-window.showJobHistory = async function(id) {
-  if (!id) return;
-  $historyModal.classList.add('active');
-  $historyContent.innerHTML = `<div style="text-align:center;color:#888;">Loading...</div>`;
-  try {
-    const res = await fetch(API_URL + "/api/jobs/" + id + "/history", {
-      method: "GET",
-      headers: {'Authorization': auth.token}
-    });
-    if (!res.ok) throw new Error("Failed to fetch history");
-    const data = await res.json();
-    if (!data.ok) throw new Error(data.error || "Failed to get history");
-    if (!Array.isArray(data.history) || data.history.length === 0) {
-      $historyContent.innerHTML = `<div style="text-align:center;color:#888;">No change history for this job.</div>`;
-      return;
-    }
-    $historyContent.innerHTML = `<ul class="history-list"></ul>`;
-    const $list = $historyContent.querySelector('.history-list');
-    data.history.slice().reverse().forEach(entry => {
-      const $li = document.createElement('li');
-      $li.className = "history-entry";
-      $li.innerHTML = `
-        <div class="history-meta">
-          ${escapeHTML(entry.user || "unknown")} &ndash; ${formatTimestamp(entry.timestamp)}
-        </div>
-        <div class="history-action">
-          ${entry.action === "created" ? "<b>Created job</b>" : "<b>Updated</b>"}
-        </div>
-      `;
-      if (entry.action === "created") {
-        $li.innerHTML += `<div style="margin-bottom:0.2em;font-size:0.97em;">Initial values:</div>`;
-        if (entry.changes && typeof entry.changes === "object") {
-          $li.innerHTML += `<ul class="changes-list">${
-            Object.entries(entry.changes).map(([k,v]) =>
-              `<li><b>${escapeHTML(k)}:</b> ${escapeHTML(String(v))}</li>`
-            ).join("")
-          }</ul>`;
-        }
-      } else if (entry.action === "updated") {
-        if (entry.changes && typeof entry.changes === "object" && Object.keys(entry.changes).length) {
-          $li.innerHTML += `<div style="margin-bottom:0.2em;font-size:0.97em;">Changed fields:</div>
-            <ul class="changes-list">${
-              Object.entries(entry.changes).map(([k,v]) =>
-                `<li><b>${escapeHTML(k)}:</b> <i>${escapeHTML(String(v.old))}</i> &rarr; <b>${escapeHTML(String(v.new))}</b></li>`
-              ).join("")
-            }</ul>`;
-        }
-      }
-      $list.appendChild($li);
-    });
-  } catch (e) {
-    $historyContent.innerHTML = `<div style="text-align:center;color:#e03f3f;">${escapeHTML(e.message || "Failed to load history")}</div>`;
-  }
-};
-$historyModalClose.onclick = function() {
-  $historyModal.classList.remove('active');
-  $historyContent.innerHTML = '';
-};
-$historyModal.onclick = function(e) {
-  if (e.target === $historyModal) {
-    $historyModal.classList.remove('active');
-    $historyContent.innerHTML = '';
-  }
-};
-
-  // CLEAR FORM //
-document.getElementById('job-form').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const job = getFormData();
-  if (!job.customerName || !job.jobDescription) {
-    alert('Please fill in all required fields: customer name and job description.');
-    return;
-  }
-  if (editingJobId) {
-    await updateJob(editingJobId, job);
-  } else {
-    await addJob(job);
-  }
-  clearForm();
-  let main = document.getElementById('mainApp');
-  main.classList.remove('form-added');
-  setTimeout(() => main.classList.add('form-added'), 10);
-  setTimeout(() => main.classList.remove('form-added'), 900);
-});
-document.getElementById('clearBtn').addEventListener('click', function() {
-  clearForm();
-});
-$cancelEditBtn.addEventListener('click', function() {
-  clearForm();
-});
-
-  // EXPORT FUNCTIONALITY (EXCEL) //
-function exportJobsToExcel(jobsArray, fileName = 'jobs-export.xlsx') {
-  if (typeof XLSX === 'undefined') {
-    alert('XLSX library not found. Please include https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js');
-    return;
-  }
-  // Only export fields that are useful in Excel
-  const exportData = jobsArray.map(j => ({
-    'Customer Name': j.customerName || '',
-    'Job Description': j.jobDescription || '',
-    'Job Location': j.jobLocation || '',
-    'Delivery Date': j.deliveryDate || '',
-    'Proposed Scheduled Date': j.proposedScheduledDate || '',
-    'Scheduled Date': j.scheduledDate || '',
-    'Notes': j.notes || '',
-    'Added By': j.addedBy || '',
-    'Status': j.status || '',
-    'Amount': j.amount != null ? j.amount : ''
-  }));
-  const ws = XLSX.utils.json_to_sheet(exportData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Jobs");
-  const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-  const blob = new Blob([wbout], { type: 'application/octet-stream' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = fileName;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-document.getElementById('exportBtn').addEventListener('click', function() {
-  if(!jobs.length) {
-    alert("No jobs to export.");
-    return;
-  }
-  exportJobsToExcel(jobs, 'jobs-export.xlsx');
-});
-
-  // IMPORT FUNCTIONALITY //
-//document.getElementById('importFile').addEventListener('change', function(e) {
-//  const file = e.target.files[0];
-//  if (!file) return;
-//  const reader = new FileReader();
-//  reader.onload = async function(ev) {
-//    try {
-//      const imported = JSON.parse(ev.target.result);
-//      if (!Array.isArray(imported)) throw new Error("Invalid file");
-//      if (imported.length && (!imported[0].customerName || !imported[0].jobDescription)) throw new Error("Invalid job format");
-//      for (const job of imported) {
-//        await addJob(job);
-//      }
-//      await loadJobs({silent:true});
-//      alert('Jobs imported!');
-//    } catch (err) {
-//      alert('Failed to import: ' + err.message);
-//    }
-//  };
-//  reader.readAsText(file);
-//  e.target.value = "";
-//});
-
-let backendReady = false;
-let backendAttempts = 0;
-function checkBackend() {
-  backendAttempts++;
-  $backendStatusMsg.innerHTML = `<span class="backend-loader" id="backendLoader"></span> Checking backend status`;
-  showBackendLoader(true);
-  fetch(API_URL + "/", { method: "GET", cache: "no-store" })
-    .then(async r => {
-      if (r.ok) {
-        backendReady = true;
-        if (!sessionStorage.getItem('backendJustReloaded')) {
-          sessionStorage.setItem('backendJustReloaded', '1');
-          $backendStatusMsg.innerHTML = `<span class="backend-loader" id="backendLoader"></span> Checking if Backend is ready! Reloading page . . .`;
-          showBackendLoader(true);
-          setTimeout(() => {
-            location.reload();
-          }, 900);
-        } else {
-          sessionStorage.removeItem('backendJustReloaded');
-          $backendStatusMsg.innerHTML = `<span class="backend-loader" id="backendLoader"></span> Backend is ready!`;
-          showBackendLoader(false);
-          setTimeout(() => {
-            $backendStatusBar.style.display = "none";
-            startApp();
-          }, 700);
-        }
-      } else throw new Error();
-    })
-    .catch(err => {
-      backendReady = false;
-      $backendStatusMsg.innerHTML = `<span class="backend-loader" id="backendLoader"></span> Backend is asleep or offline. Retrying in a few seconds . . .`;
-      showBackendLoader(true);
-      setTimeout(() => checkBackend(), 5000);
-    });
-}
-function startApp() {
-  const saved = localStorage.getItem('auth');
-  if (saved) {
-    auth = JSON.parse(saved);
-    showMain();
-    loadJobs();
-  } else {
-    showLogin();
-  }
-}
-const darkToggle = document.getElementById('darkToggle');
-const sunIcon = document.getElementById('sunIcon');
-const moonIcon = document.getElementById('moonIcon');
-const darkToggleText = document.getElementById('darkToggleText');
-function setDarkMode(enabled) {
-  if (enabled) {
-    document.body.classList.add('dark');
-    darkToggle.classList.add('active');
-    sunIcon.style.display = 'none';
-    moonIcon.style.display = 'inline';
-    darkToggleText.innerText = "Light Mode";
-    localStorage.setItem('darkMode', '1');
-  } else {
-    document.body.classList.remove('dark');
-    darkToggle.classList.remove('active');
-    sunIcon.style.display = 'inline';
-    moonIcon.style.display = 'none';
-    darkToggleText.innerText = "Dark Mode";
-    localStorage.removeItem('darkMode');
-  }
-}
-darkToggle.onclick = function() {
-  setDarkMode(!document.body.classList.contains('dark'));
-};
-if (localStorage.getItem('darkMode')) setDarkMode(true);
-
-window.onload = () => {
-  $backendStatusBar.style.display = "flex";
-  $authSection.style.display = "none";
-  $signupSection.style.display = "none";
-  $mainApp.style.display = "none";
-  $authStatusBar.style.display = "none";
-  showBackendLoader(true);
-  checkBackend();
-};
-window.deleteJob = deleteJob;
-
-document.addEventListener('DOMContentLoaded', function() {
-  const minimizeBtn = document.getElementById('minimizeJobFormBtn');
-  const mainApp = document.getElementById('mainApp');
-  if (minimizeBtn && mainApp) {
-    minimizeBtn.addEventListener('click', function() {
-      mainApp.classList.toggle('minimized');
-    });
-  }
-  ['deliveryDate','proposedScheduledDate','scheduledDate'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) {
-      el.addEventListener('focus', function() { this.showPicker && this.showPicker(); });
-      el.addEventListener('click', function() { this.showPicker && this.showPicker(); });
-    }
-  });
-});
-  // --- Banner warning feature ---
-  const $siteWarningBanner = document.getElementById('siteWarningBanner');
-  let bannerState = false;
-  let bannerSSE = null;
-
-  function applyBanner(state) {
-    bannerState = !!state;
-    if (bannerState) {
-      $siteWarningBanner.style.display = 'block';
-      document.body.classList.add('banner-active');
-    } else {
-      $siteWarningBanner.style.display = 'none';
-      document.body.classList.remove('banner-active');
-    }
-  }
-
-  // Prefer Server-Sent-Events (SSE) for live banner state
-  function setupBannerLiveUpdates() {
-    if (bannerSSE) {
-      bannerSSE.close();
-      bannerSSE = null;
-    }
-    try {
-      bannerSSE = new EventSource(API_URL + '/api/banner/stream');
-      bannerSSE.onmessage = function(evt) {
-        try {
-          const data = JSON.parse(evt.data);
-          applyBanner(data.enabled);
-        } catch {}
-      };
-      bannerSSE.onerror = function() {
-        // fallback to polling if SSE fails
-        setTimeout(pollBannerState, 10000);
-        bannerSSE.close();
-        bannerSSE = null;
-      };
-    } catch {
-      // fallback to polling
-      pollBannerState();
-    }
-  }
-  function pollBannerState() {
-    fetch(API_URL + '/api/banner')
-      .then(r => r.json())
-      .then(res => {
-        if (typeof res.enabled === "boolean") {
-          applyBanner(res.enabled);
-        }
-      })
-      .catch(()=>{});
-    setTimeout(pollBannerState, 15000);
-  }
-  // Start live updates as soon as possible
-  setupBannerLiveUpdates();
-</script>
-</body>
-</html>
+  .dark-toggle-btn svg {
+    height: 1.2em; width: 1.2em;
+    vertical-align: middle;
+    transition:
